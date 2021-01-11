@@ -33,6 +33,8 @@ const dotenvFiles = [
   paths.dotenv,
 ].filter(Boolean);
 
+const dotEnvKeys = [];
+
 // Load environment variables from .env* files. Suppress warnings using silent
 // if this file is missing. dotenv will never modify any environment variables
 // that have already been set.  Variable expansion is supported in .env files.
@@ -40,11 +42,13 @@ const dotenvFiles = [
 // https://github.com/motdotla/dotenv-expand
 dotenvFiles.forEach(dotenvFile => {
   if (fs.existsSync(dotenvFile)) {
-    require('dotenv-expand')(
+    const { parsed } = require('dotenv-expand')(
       require('dotenv').config({
         path: dotenvFile,
       })
     );
+
+    dotEnvKeys.push(...Object.keys(parsed));
   }
 });
 
@@ -70,7 +74,7 @@ const REACT_APP = /^REACT_APP_/i;
 
 function getClientEnvironment(publicUrl) {
   const raw = Object.keys(process.env)
-    .filter(key => REACT_APP.test(key))
+    .filter(key => REACT_APP.test(key) || dotEnvKeys.indexOf(key) >= 0)
     .reduce(
       (env, key) => {
         env[key] = process.env[key];
