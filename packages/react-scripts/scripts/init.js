@@ -212,7 +212,7 @@ module.exports = function (
 
   // Setup the eslint config
   appPackage.eslintConfig = {
-    extends: 'react-app',
+    extends: '@growflow',
   };
 
   // Setup the browsers list
